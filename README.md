@@ -65,7 +65,7 @@ $get_from_db = function($Record) use ($database_records){
 };
 $set_to_db = function($Record, $changes) use ($database_records){
 	$record_data = $database_records[$Record->id];
-	$record_data = array_merge($changes->getArrayCopy(), $record_data);
+	$record_data= \Grithin\Dictionary::diff_apply($record_data, $changes);
 	$database_records[$Record->id] = $record_data;
 	return $record_data;
 };
@@ -98,7 +98,7 @@ $jsonify = function($Record, $diff){
 };
 $unjsonify = function($Record){
 	if(isset($Record['children'])){
-		$Record['children'] = json_decode($Record['children'], true);
+		$Record->record['children'] = json_decode($Record->record['children'], true);
 	}
 };
 
@@ -109,8 +109,40 @@ $record->get();
 
 # now can access the full structure
 $record['children'][0]['name']; #> sue
+$record['children'][0]['name'] = 'jan';
+$record->save(); # will encode the json for the db, then decode it for regular access
+
+$record['children'][0]['name']; #> 'jan'
+
+var_export($database_records);
+/* >
+array (
+  1 =>
+  array (
+    'id' => 1,
+    'name' => 'bob',
+    'children' => '[{"name":"sue"}]',
+  ),
+)
+*/
 
 ```
+
+Some additional highlights from the above.
+
+On the `after_get` function `unjsonify`, `$Record->record['children']` is used to avoid triggering more events.  If you don't mind `before_change` and `after_change` being run, `$Record['children']` could have been used.
+
+When setting the record in the manner `$Record['name'] = 'bob'`, each assignment triggers two events.  It may be preferable to do a bulk change, which allows multiple things to change and will only emit two events.  This can be done with both the local copy and the source
+```php
+# update local copy
+$Record->local_update(['name'=>'bill', 'age'=>1]);
+
+# update both
+$Record->update(['name'=>'bill', 'age'=>1]);
+```
+
+
+
 
 
 
@@ -123,7 +155,6 @@ Types:
 -	EVENT_CHANGE_AFTER | EVENT_CHANGE
 -	EVENT_UPDATE_BEFORE
 -	EVENT_UPDATE_AFTER | EVENT_UPDATE
--	EVENT_REFRESH
 
 Convenience functions `after_get`, `before_change`, `after_change`, `before_update`, `after_update` will call the parameter function on the corresponding event with parameters `($this, $details)`, where in `$details` is an array object of the change.
 

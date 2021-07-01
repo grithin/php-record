@@ -24,14 +24,12 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 	public $stored_record; # the last known record state from the getter
 	public $record; # the current record state, with potential changes
 
-	const EVENT_UPDATE = 1;
-	const EVENT_CHANGE = 2;
-	const EVENT_CHANGE_BEFORE = 4;
-	const EVENT_CHANGE_AFTER = 8;
-	const EVENT_UPDATE_BEFORE = 16;
-	const EVENT_UPDATE_AFTER = 32;
-	const EVENT_NEW_KEY = 64; # ?
-	const EVENT_AFTER_GET = 128;
+	const EVENT_AFTER_GET = 1;
+	const EVENT_CHANGE_BEFORE = 2;
+	const EVENT_CHANGE_AFTER = 4;
+	const EVENT_UPDATE_BEFORE = 8;
+	const EVENT_UPDATE_AFTER = 16;
+
 
 	/** By default, the diff function will turn objects into arrays.  This is not desired for something like a Time object, so, instead, use a equals comparison comparer */
 	public $diff_options = ['object_comparer'=>[\Grithin\Dictionary::class, 'diff_comparer_equals']];
@@ -272,6 +270,7 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 			$this->notify(self::EVENT_UPDATE_BEFORE, $diff);
 			if(count($diff)){ # may have been mutated to nothing
 				$this->stored_record = $this->record = $this->options['setter']($this, $diff);
+				$this->notify(self::EVENT_AFTER_GET, $diff);
 				$this->notify(self::EVENT_UPDATE_AFTER, $diff);
 			}
 		}
