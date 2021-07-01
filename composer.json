@@ -1,0 +1,23 @@
+{
+    "name": "grithin/php-record",
+    "description": "Managing inclusion of web assets",
+    "keywords": ["js css assets inclusion"],
+    "license": "Apache-2.0",
+    "homepage": "http://clrmo.com",
+    "authors": [
+        {
+            "name": "Adam F Frederick",
+            "email": "adam_php@deemit.com"
+        }
+    ],
+    "require": {
+        "php": ">=7",
+        "ext-pdo": "*",
+        "grithin/phpbase": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Grithin\\": "src/"
+        }
+    }
+}
