@@ -151,10 +151,11 @@ $Record->update(['name'=>'bill', 'age'=>1]);
 
 # Events, Observers
 Types:
+-	EVENT_AFTER_GET : immediately after getter function is called.  This can be used to decode JSON
 -	EVENT_CHANGE_BEFORE
--	EVENT_CHANGE_AFTER | EVENT_CHANGE
--	EVENT_UPDATE_BEFORE
--	EVENT_UPDATE_AFTER | EVENT_UPDATE
+-	EVENT_CHANGE_AFTER
+-	EVENT_UPDATE_BEFORE : before updating the source.  This can be used to re-encode JSON
+-	EVENT_UPDATE_AFTER
 
 Convenience functions `after_get`, `before_change`, `after_change`, `before_update`, `after_update` will call the parameter function on the corresponding event with parameters `($this, $details)`, where in `$details` is an array object of the change.
 
