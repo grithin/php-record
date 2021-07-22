@@ -1,5 +1,5 @@
 {
-    "name": "grithin/php-record",
+    "name": "grithin/record",
     "description": "Managing inclusion of web assets",
     "keywords": ["js css assets inclusion"],
     "license": "Apache-2.0",
