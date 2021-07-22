@@ -73,6 +73,7 @@ $set_to_db = function($Record, $changes) use ($database_records){
 
 # initialize the record, using the 'id' option
 $record = new \Grithin\Record(false, $get_from_db, $set_to_db, ['id'=>1]);
+$record->get();
 
 # let's capitalize the name when we set it
 $capitalize_name = function($Record, $diff){
