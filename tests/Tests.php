@@ -6,6 +6,10 @@ use \Grithin\Time;
 use \Grithin\Arrays;
 use \Grithin\Record;
 use \Grithin\MissingValue;
+use \Grithin\GlobalFunctions;
+
+# toggle to silence ppe and pp during debugging
+GlobalFunctions::$silence = true;
 
 global $accumulation;
 $accumulation = [];
@@ -28,8 +32,9 @@ function accumulate_array_changes($that, $changes){
 /**
 * @group Record
 */
-class RecordClassTests extends TestCase{
+class Tests extends TestCase{
 	function __construct(){
+		parent::__construct();
 		$this->underlying = [];
 		$this->events = [];
 	}
@@ -49,13 +54,6 @@ class RecordClassTests extends TestCase{
 		$this->setter_sequence = [];
 		global $accumulation;
 		$accumulation = [];
-	}
-	function assertEqualsCopy($x, $y, $error_message='not equal'){
-		if($x != $y){
-			pp('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!error');
-			ppe([$x,$y]);
-			throw new Exception($error_message);
-		}
 	}
 
 	function test_events_sequence(){
@@ -142,12 +140,12 @@ class RecordClassTests extends TestCase{
 		$this->assertEquals($this->setter_sequence[0], ( (['moe'=>new MissingValue, 'joe'=>'susan'])), 'update 1 setter diff incorrect');
 	}
 	function test_subrecord(){
+		GlobalFunctions::$silence = false;
 		$this->reset_sequences();
 		$record = new Record(null, [$this,'getter'], [$this,'setter']);
 		$record['bob'] = ['monkeys'=>'bill', 'sl'=>'ss'];
 		$record->before_change('accumulate_array_changes');
 		global $accumulation;
-
 
 		# test unset works on subrecord
 		unset($record['bob']['sl']);

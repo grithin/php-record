@@ -159,7 +159,13 @@ Types:
 
 Convenience functions `after_get`, `before_change`, `after_change`, `before_update`, `after_update` will call the parameter function on the corresponding event with parameters `($this, $details)`, where in `$details` is an array object of the change.
 
-Update and Change events will fire if there were changes, otherwise they won't.  That is, if an assignment results in the same value, it will not fire an event.
+
+![Events](about/events.png?raw=true "Events")
+
+(EVENT_UPDATE_AFTER runs after EVENT_AFTER_GET since it may require the data to be reformatted by EVENT_AFTER_GET)
+
+
+Update and Change events will fire only if there were changes.
 
 The diff parameter presented to event observers is an ArrayObject, and that object is used when applying the diff to the record.  Consequently, mutating the diff within a "before" event observer will affect the resulting record.  If the diff count becomes 0, no change will be applied.
 

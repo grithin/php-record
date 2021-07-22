@@ -40,8 +40,8 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 
 	/** params
 	< data > < t:array > < the initial record data > < if false, use getter to get initial data >
-	< getter > < function(this) >
-	< setter > < the function that sets the underlying record.  This could be the function that updates the database value > < function(changes, this): record {} >
+	< getter > < function(this): record_data >
+	< setter > < the function that sets the underlying record.  This could be the function that updates the database value > < function(this, changes): record_data >
 	< options >
 		id: < an identifying value for getter and setter to use >
 		query: < an identifying query for getter and setter to use >
@@ -66,10 +66,9 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 		$this->setter = $setter;
 
 		$this->options = array_merge($options, ['getter'=>$getter, 'setter'=>$setter]);
-		if($data === false){
-			$data = $this->options['getter']($this);
+		if(Tool::is_scalar($data)){
+			$data = [];
 		}
-
 		$this->stored_record = $this->record = Arrays::from($data);
 
 		if(!is_array($this->record)){
@@ -125,11 +124,13 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 	}
 	/** for ArrayAccess */
 	public function offsetExists($offset) {
-		return isset($this->record[$offset]);
+		return Arrays::is_set($this->record, $offset);
 	}
 	/** for ArrayAccess */
 	public function offsetUnset($offset) {
-		$this->local_update([$offset=>(new \Grithin\MissingValue)]);
+		if(Arrays::is_set($this->record, $offset)){
+			$this->local_update([$offset=>(new \Grithin\MissingValue)]);
+		}
 	}
 	/** for ArrayAccess */
 	public function offsetGet($offset) {
@@ -300,6 +301,7 @@ class Record implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSeria
 			$this->notify(self::EVENT_CHANGE_BEFORE, $diff);
 			if(count($diff)){ # may have been mutated after event to nothing
 				$this->record = Dictionary::diff_apply($this->record, $diff);
+
 				$this->notify(self::EVENT_CHANGE_AFTER, $diff);
 			}
 		}

@@ -9,7 +9,7 @@
 	beStrictAboutOutputDuringTests="true"
 	>
 	<testsuites>
-		<testsuite>
+		<testsuite name="main">
 			<directory suffix=".php">./tests/</directory>
 			<exclude>*/*</exclude>
 		</testsuite>
