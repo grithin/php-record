@@ -6,6 +6,9 @@ Intended to be an observable that matches a database record, allowing the handli
 (Similar to SplSubject, but because SplSubject uses pointless SplObserver, SplSubject is not implemented)
 
 
+```sh
+composer require grithin/record
+```
 
 
 # Use
